@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chúc Mừng 20-10</title>
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+            background-color: #f0f8ff;
+        }
+
+        .parent {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .above-fold {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .wrap-present {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .present-box {
+            width: 200px;
+            height: 200px;
+            perspective: 1000px;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .present-box:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .present {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+        }
+
+        .present.open {
+            transform: rotateY(180deg);
+        }
+
+        .side {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .front {
+            color: #fff;
+        }
+
+        .front img {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .back {
+            background-color: #fff;
+            color: #333;
+            transform: rotateY(180deg);
+            padding: 20px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #card {
+            max-width: 90vw;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .title-card {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #ff1493;
+        }
+
+        .honey {
+            width: 100px;
+            height: auto;
+            margin: 10px 0;
+        }
+
+        .content-card {
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .info-text {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #333;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+</head>
+<body>
+    <div class="parent">
+        <canvas id="canvas"></canvas>
+        
+        <section class="above-fold">
+            <div class="wrap-present">
+                <div class="present-box" id="present">
+                    <div class="present">
+                        <div class="side front">
+                            <img src="5c721d75a2bb91f64ab172f2f47e1ee1.png_720x720q80.png" alt="Hộp quà">
+                        </div>
+                        <div class="side back">
+                            <img src="5c721d75a2bb91f64ab172f2f47e1ee1.png_720x720q80.png" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="info-text" id="info-text">Nhấn vào để mở quà</p>
+        </section>
+
+        <div id="card">
+            <h4 class="title-card">🎁 Chúc Mừng 20-10 🎁</h4>
+            <img src="163.png" alt="Hộp quà" class="honey" />
+            <h4 class="content-card">
+                Nhân ngày Phụ nữ Việt Nam 20/10, xin gửi đến các chị em lời chúc sức khỏe, hạnh phúc và thành công! Mong các chị em luôn rạng rỡ, tự tin và vững bước trên con đường sự nghiệp cũng như trong cuộc sống. Cảm ơn sự cống hiến và nỗ lực không ngừng của các bạn đã góp phần làm nên sự phát triển của công ty. Chúc một ngày 20/10 thật nhiều niềm vui và tràn đầy yêu thương!
+            </h4>
+        </div>
+    </div>
+    
+    <audio autoplay loop id="playAudio">
+      <source src="nen.mp3" type="audio/mpeg">
+      Trình duyệt của bạn không hỗ trợ âm thanh.
+  </audio>
+  
+
+    <script>
+        $(document).ready(function() {
+            // Thiết lập hiệu ứng pháo hoa
+            particlesJS("canvas", {
+                particles: {
+                    number: {
+                        value: 100,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: "#ff0"
+                    },
+                    shape: {
+                        type: "circle",
+                        stroke: {
+                            width: 0,
+                            color: "#000000"
+                        },
+                        polygon: {
+                            nb_sides: 5
+                        }
+                    },
+                    opacity: {
+                        value: 0.5,
+                        random: false
+                    },
+                    size: {
+                        value: 5,
+                        random: true
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: "#ffffff",
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 6,
+                        direction: "none",
+                        random: false,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false
+                    }
+                },
+                interactivity: {
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: "grab"
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: "push"
+                        },
+                        resize: true
+                    }
+                },
+                retina_detect: true
+            });
+
+            // Thêm sự kiện click để mở quà
+            $('#present').on('click', function() {
+                $(this).find('.present').toggleClass('open'); // Quay hộp quà
+                
+                // Ẩn chữ nhấp vào
+                $('#info-text').fadeOut();
+
+                // Hiển thị tấm thư
+                $('#card').fadeIn();
+            });
+        });
+
+        // Canvas.js - Ví dụ đơn giản để vẽ trên canvas
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Vẽ hình nền
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Vẽ hình tròn
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 100, 0, Math.PI * 2, false);
+            ctx.fillStyle = 'rgba(255, 182, 193, 0.5)';
+            ctx.fill();
+            ctx.closePath();
+
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+</body>
+</html>
